@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>تفاصيل التطبيق</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+      margin: 0;
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+      padding-bottom: 70px;
+      text-align: center; /* لجعل المحتوى مركزي */
+    }
+
+    header {
+      background: #004225;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      direction: rtl;
+    }
+
+    .logo {
+      height: 40px;
+      cursor: pointer;
+    }
+
+    .search-icon {
+      height: 30px;
+      cursor: pointer;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 20px auto;
+      padding: 0 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .image-box img {
+      width: 120px;
+      height: 120px;
+      border-radius: 12px;
+      object-fit: cover;
+      margin: 0 auto;
+    }
+
+    .app-name {
+      font-size: 24px;
+      margin: 10px 0 0 0;
+    }
+
+    .download-btn {
+      background-color: #004225;
+      color: #fff;
+      border: none;
+      padding: 14px 0;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      width: 100%;
+      max-width: 400px;
+      margin: 15px auto 0 auto;
+      display: inline-block;
+      text-decoration: none;
+      text-align: center;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    .details {
+      margin: 20px auto;
+      max-width: 960px;
+      font-size: 16px;
+      line-height: 1.6;
+      text-align: right;
+      padding: 0 15px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      padding: 10px 0;
+      z-index: 1000;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #000;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+    }
+
+    nav button img {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 5px;
+    }
+
+    @media (max-width: 720px) {
+      .download-btn {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="https://c.top4top.io/p_3470aho240.png" class="logo" onclick="location.href='index.html'" />
+  <img src="https://c.top4top.io/p_3470jwi5p0.png" class="search-icon" onclick="location.href='search.html'" />
+</header>
+
+<div class="container" id="detailsContainer">
+  <!-- محتوى الصورة والاسم والزر سيتم إضافته هنا -->
+</div>
+
+<div class="details" id="appDetails"></div>
+
+<nav>
+  <button onclick="location.href='index.html'">
+    <img src="https://g.top4top.io/p_3470pwld00.png" />
+    التطبيقات
+  </button>
+  <button onclick="location.href='games.html'">
+    <img src="https://h.top4top.io/p_3470n1is91.png" />
+    الألعاب
+  </button>
+</nav>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA7AG0srgNst24Fk9qrEQWCRrhYxZvpvF0",
+    authDomain: "alfaham-app.firebaseapp.com",
+    databaseURL: "https://alfaham-app-default-rtdb.firebaseio.com/",
+    projectId: "alfaham-app",
+    storageBucket: "alfaham-app.appspot.com",
+    messagingSenderId: "835691696342",
+    appId: "1:835691696342:web:7998e7a6c7d024ba287977"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
+
+  const appId = getQueryParam('id');
+  const type = getQueryParam('type');
+  const container = document.getElementById('detailsContainer');
+  const detailsBox = document.getElementById('appDetails');
+
+  if (!appId || !type) {
+    container.innerHTML = '<p style="text-align:center;">لم يتم تحديد التطبيق بشكل صحيح.</p>';
+  } else {
+    db.ref(type + '/' + appId).once('value').then(snapshot => {
+      const data = snapshot.val();
+      if (!data) {
+        container.innerHTML = '<p style="text-align:center;">التطبيق غير موجود.</p>';
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="image-box">
+          <img src="${data.image}" alt="${data.name}" />
+        </div>
+        <div class="app-name">${data.name}</div>
+        <a class="download-btn" href="${data.link}" target="_blank" rel="noopener noreferrer">تحميل</a>
+      `;
+
+      detailsBox.innerHTML = data.details ? data.details.replace(/\n/g, '<br>') : '';
+    }).catch(() => {
+      container.innerHTML = '<p style="text-align:center;">حدث خطأ أثناء تحميل البيانات.</p>';
+    });
+  }
+</script>
+
+</body>
+</html>
