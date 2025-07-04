@@ -15,6 +15,7 @@
       padding-bottom: 70px;
     }
 
+    /* الهيدر مطابق للرئيسية */
     header {
       background: #004225;
       padding: 10px 15px;
@@ -33,38 +34,43 @@
       cursor: pointer;
     }
 
+    /* الحاوية الرئيسية */
     .container {
       max-width: 960px;
       margin: 20px auto;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 20px;
+      flex-wrap: wrap;
       padding: 0 15px;
-      flex-wrap: nowrap;
+    }
+
+    .image-box {
+      order: 2; /* الصورة يمين */
+      flex-shrink: 0;
     }
 
     .image-box img {
-      width: 120px;
-      height: 120px;
+      width: 100px;
+      height: 100px;
       border-radius: 12px;
       object-fit: cover;
-      flex-shrink: 0;
+      display: block;
     }
 
     .info-box {
       flex: 1;
+      order: 1; /* الاسم يسار */
+      text-align: left;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 10px;
-      margin-left: 15px;
     }
 
     .app-name {
-      font-size: 24px;
-      margin: 0;
-      text-align: left;
+      font-size: 22px;
+      margin-bottom: 10px;
     }
 
     .download-btn {
@@ -73,33 +79,25 @@
       border: none;
       padding: 12px;
       border-radius: 8px;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       cursor: pointer;
       width: 100%;
-      max-width: 300px;
       text-align: center;
       text-decoration: none;
       margin-top: 15px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .download-btn svg {
-      fill: #fff;
-      width: 20px;
-      height: 20px;
+      display: block;
+      order: 3;
     }
 
     .details {
       margin: 20px 15px;
       font-size: 16px;
       line-height: 1.6;
-      max-width: 960px;
+      white-space: pre-wrap;
     }
 
+    /* الشريط السفلي مطابق للرئيسية */
     nav {
       position: fixed;
       bottom: 0;
@@ -132,22 +130,20 @@
       margin-bottom: 5px;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 720px) {
       .container {
-        padding: 0 10px;
+        flex-direction: row; /* صورة يمين واسم يسار على الهاتف */
+        justify-content: flex-start;
       }
-      .image-box img {
-        width: 90px;
-        height: 90px;
+      .image-box {
+        order: 2;
       }
-      .app-name {
-        font-size: 18px;
+      .info-box {
+        order: 1;
       }
       .download-btn {
-        max-width: 100%;
-        font-size: 16px;
-        padding: 10px;
-        margin-top: 10px;
+        margin-top: 15px;
+        order: 3;
       }
     }
   </style>
@@ -160,7 +156,7 @@
 </header>
 
 <div class="container" id="detailsContainer">
-  <!-- بيانات التطبيق ستُضاف هنا -->
+  <!-- الصورة، الاسم، وزر التحميل يظهرون هنا -->
 </div>
 
 <div class="details" id="appDetails"></div>
@@ -199,13 +195,14 @@
   }
 
   const appId = getQueryParam('id');
+  const type = getQueryParam('type'); // قراءة نوع العنصر
   const container = document.getElementById('detailsContainer');
   const detailsBox = document.getElementById('appDetails');
 
-  if (!appId) {
-    container.innerHTML = '<p style="text-align:center;">لم يتم تحديد التطبيق.</p>';
+  if (!appId || !type) {
+    container.innerHTML = '<p style="text-align:center;">لم يتم تحديد التطبيق بشكل صحيح.</p>';
   } else {
-    db.ref('items/' + appId).once('value').then(snapshot => {
+    db.ref(type + '/' + appId).once('value').then(snapshot => {
       const data = snapshot.val();
       if (!data) {
         container.innerHTML = '<p style="text-align:center;">التطبيق غير موجود.</p>';
@@ -213,17 +210,12 @@
       }
 
       container.innerHTML = `
-        <div class="image-box">
-          <img src="${data.image}" alt="${data.name}" />
-        </div>
         <div class="info-box">
           <div class="app-name">${data.name}</div>
-          <a class="download-btn" href="${data.link}" target="_blank" rel="noopener noreferrer">
-            تحميل
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-              <path d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4v-6h3l-5-5z"/>
-            </svg>
-          </a>
+          <a class="download-btn" href="${data.link}" target="_blank" rel="noopener noreferrer">تحميل</a>
+        </div>
+        <div class="image-box">
+          <img src="${data.image}" alt="${data.name}" />
         </div>
       `;
 
