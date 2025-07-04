@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>الألعاب</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo&display=swap" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Cairo', sans-serif;
+    margin: 0;
+    background: #fff;
+    color: #000;
+    font-weight: 700;
+    padding-top: 70px; /* مساحة للهيدر */
+    padding-bottom: 60px; /* مساحة للشريط السفلي */
+  }
+  header {
+    background-color: #004225;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    z-index: 1000;
+  }
+  header img.logo {
+    height: 50px;
+    cursor: pointer;
+  }
+  .search-container {
+    position: relative;
+  }
+  .search-icon {
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    filter: brightness(0) invert(1);
+  }
+  .search-input {
+    position: absolute;
+    top: 50%;
+    right: 40px;
+    transform: translateY(-50%);
+    width: 0;
+    opacity: 0;
+    transition: width 0.3s ease, opacity 0.3s ease;
+    padding: 6px 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    background: white;
+    color: black;
+    z-index: 1001;
+  }
+  .search-input.active {
+    width: 180px;
+    opacity: 1;
+  }
+  main {
+    max-width: 960px;
+    margin: auto;
+    padding: 15px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    justify-items: center;
+  }
+  .card {
+    width: 100px;
+    cursor: pointer;
+    text-align: center;
+    font-weight: 700;
+    color: #000;
+  }
+  .card img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    margin-bottom: 6px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .card h3 {
+    font-size: 14px;
+    margin: 0;
+  }
+  footer {
+    background: #fff;
+    border-top: 1px solid #ccc;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 60px;
+    font-weight: 700;
+    color: #000;
+    z-index: 1000;
+  }
+  footer .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+    color: #000;
+  }
+  footer .nav-item img {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 4px;
+  }
+
+  /* تجاوب الموبايل */
+  @media (max-width: 480px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .card {
+      width: 90px;
+    }
+    .card img {
+      width: 90px;
+      height: 90px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img
+    class="logo"
+    src="https://c.top4top.io/p_3470aho240.png"
+    alt="شعار المتجر"
+    onclick="goHome()"
+  />
+  <div class="search-container">
+    <input
+      type="text"
+      id="searchInput"
+      class="search-input"
+      placeholder="ابحث عن لعبة..."
+      oninput="searchGames()"
+    />
+    <img
+      src="https://c.top4top.io/p_3470jwi5p0.png"
+      alt="بحث"
+      class="search-icon"
+      id="searchIcon"
+      title="بحث"
+      onclick="toggleSearch()"
+    />
+  </div>
+</header>
+
+<main>
+  <div class="grid" id="gamesGrid"></div>
+</main>
+
+<footer>
+  <div class="nav-item" onclick="location.href='index.html'">
+    <img src="https://g.top4top.io/p_3470pwld00.png" alt="تطبيقات" />
+    التطبيقات
+  </div>
+  <div class="nav-item" onclick="location.href='games.html'">
+    <img src="https://h.top4top.io/p_3470n1is91.png" alt="ألعاب" />
+    الألعاب
+  </div>
+</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA7AG0srgNst24Fk9qrEQWCRrhYxZvpvF0",
+    authDomain: "alfaham-app.firebaseapp.com",
+    databaseURL: "https://alfaham-app-default-rtdb.firebaseio.com/",
+    projectId: "alfaham-app",
+    storageBucket: "alfaham-app.appspot.com",
+    messagingSenderId: "835691696342",
+    appId: "1:835691696342:web:7998e7d024ba287977"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  let allGames = [];
+
+  function fetchGames() {
+    const refItems = db.ref('items');
+    refItems.once('value')
+      .then(snapshot => {
+        allGames = [];
+        snapshot.forEach(child => {
+          const item = child.val();
+          if(item.type === 'game'){
+            allGames.push({ id: child.key, ...item });
+          }
+        });
+        searchGames();
+      })
+      .catch(() => {
+        document.getElementById('gamesGrid').innerHTML = '<p style="text-align:center; font-weight:700;">حدث خطأ أثناء تحميل الألعاب.</p>';
+      });
+  }
+
+  function searchGames() {
+    const value = document.getElementById('searchInput').value.toLowerCase();
+    const grid = document.getElementById('gamesGrid');
+    grid.innerHTML = '';
+
+    const filtered = allGames.filter(item => item.name.toLowerCase().includes(value));
+    if (filtered.length === 0) {
+      grid.innerHTML = '<p style="text-align:center; font-weight:700;">لا توجد ألعاب مطابقة.</p>';
+      return;
+    }
+
+    filtered.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerHTML = `
+        <img src="${item.image}" alt="${item.name}" />
+        <h3>${item.name}</h3>
+      `;
+      div.onclick = () => {
+        window.location.href = `details.html?id=${item.id}`;
+      };
+      grid.appendChild(div);
+    });
+  }
+
+  function toggleSearch() {
+    const input = document.getElementById('searchInput');
+    input.classList.toggle('active');
+    if (input.classList.contains('active')) {
+      input.focus();
+    } else {
+      input.value = '';
+      searchGames();
+    }
+  }
+
+  function goHome() {
+    location.href = 'index.html';
+  }
+
+  fetchGames();
+</script>
+
+</body>
+</html>
