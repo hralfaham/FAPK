@@ -16,25 +16,6 @@
       text-align: center; /* لجعل المحتوى مركزي */
     }
 
-    header {
-      background: #004225;
-      padding: 10px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      direction: rtl;
-    }
-
-    .logo {
-      height: 40px;
-      cursor: pointer;
-    }
-
-    .search-icon {
-      height: 30px;
-      cursor: pointer;
-    }
-
     .container {
       max-width: 960px;
       margin: 20px auto;
@@ -97,18 +78,11 @@
 </head>
 <body>
 
-<header>
-  <img src="https://c.top4top.io/p_3470aho240.png" class="logo" onclick="location.href='index.html'" />
-  <img src="https://c.top4top.io/p_3470jwi5p0.png" class="search-icon" onclick="location.href='search.html'" />
-</header>
-
 <div class="container" id="detailsContainer">
   <!-- محتوى الصورة والاسم والزر سيتم إضافته هنا -->
 </div>
 
 <div class="details" id="appDetails"></div>
-
-<!-- تم حذف شريط التنقل السفلي -->
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
