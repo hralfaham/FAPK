@@ -92,6 +92,7 @@
       scrollbar-width: thin;
       scrollbar-color: #004225 #e0e0e0;
     }
+
     .screenshots-container::-webkit-scrollbar {
       height: 8px;
     }
@@ -104,15 +105,32 @@
       border-radius: 4px;
     }
 
-    .screenshots-container img {
-      height: 220px;
-      width: calc((100% / 3) - 13px);
-      border-radius: 12px;
-      object-fit: cover;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-      flex-shrink: 0;
+    /* 4 صور كاملة في عرض الكمبيوتر */
+    @media(min-width: 721px) {
+      .screenshots-container img {
+        width: calc((100% / 4) - 7.5px);
+        height: auto;
+        object-fit: contain;
+        border-radius: 12px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+      }
     }
+
+    /* 3.5 صورة في عرض الهاتف */
+    @media(max-width: 720px) {
+      .screenshots-container img {
+        width: calc((100% / 3.5) - 7.5px);
+        height: auto;
+        object-fit: contain;
+        border-radius: 12px;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: transform 0.3s ease;
+      }
+    }
+
     .screenshots-container img:hover {
       transform: scale(1.05);
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
@@ -124,10 +142,6 @@
       }
       .youtube-video {
         height: 200px;
-      }
-      .screenshots-container img {
-        height: 140px;
-        width: calc((100% / 2) - 10px);
       }
     }
   </style>
