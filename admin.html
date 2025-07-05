@@ -193,7 +193,7 @@
     <label for="youtube">رابط فيديو YouTube (اختياري):</label>
     <input type="url" id="youtube" placeholder="https://www.youtube.com/embed/XXXXXXXX" />
 
-    <label for="screenshots">روابط لقطات الشاشة (اختياري، مفصولة بفاصلة):</label>
+    <label for="screenshots">روابط لقطات الشاشة (اختياري، مفصولة بفواصل أو أسطر جديدة):</label>
     <textarea id="screenshots" rows="3" placeholder="https://example.com/shot1.jpg, https://example.com/shot2.jpg"></textarea>
 
     <button type="submit">حفظ</button>
@@ -306,7 +306,12 @@
 
     const youtube = document.getElementById("youtube").value.trim();
     const screenshotsText = document.getElementById("screenshots").value.trim();
-    const screenshots = screenshotsText ? screenshotsText.split(",").map(s => s.trim()).filter(s => s) : [];
+    const screenshots = screenshotsText
+      ? screenshotsText
+          .split(/[\n,]+/)
+          .map(s => s.trim())
+          .filter(s => s)
+      : [];
 
     if (!name || !image || !link || !type || !details) {
       alert("الرجاء ملء جميع الحقول المطلوبة");
