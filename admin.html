@@ -190,8 +190,8 @@
     <label for="details">تفاصيل التطبيق / اللعبة:</label>
     <textarea id="details" rows="4" required></textarea>
 
-    <label for="youtube">رابط فيديو YouTube (اختياري):</label>
-    <input type="url" id="youtube" placeholder="https://www.youtube.com/embed/XXXXXXXX" />
+    <label for="youtubeId">معرف فيديو YouTube (Video ID) - فقط المعرف بدون رابط كامل:</label>
+    <input type="text" id="youtubeId" placeholder="مثال: dQw4w9WgXcQ" />
 
     <label for="screenshots">روابط لقطات الشاشة (اختياري، مفصولة بفواصل أو أسطر جديدة):</label>
     <textarea id="screenshots" rows="3" placeholder="https://example.com/shot1.jpg, https://example.com/shot2.jpg"></textarea>
@@ -304,7 +304,7 @@
     const type = document.getElementById("type").value;
     const details = document.getElementById("details").value.trim();
 
-    const youtube = document.getElementById("youtube").value.trim();
+    const youtubeId = document.getElementById("youtubeId").value.trim();
     const screenshotsText = document.getElementById("screenshots").value.trim();
     const screenshots = screenshotsText
       ? screenshotsText
@@ -319,7 +319,7 @@
     }
 
     const itemData = { name, image, link, details };
-    if (youtube) itemData.youtube = youtube;
+    if (youtubeId) itemData.youtubeId = youtubeId;
     if (screenshots.length) itemData.screenshots = screenshots;
 
     if (id) {
@@ -361,7 +361,7 @@
         document.getElementById("details").value = data.details;
         document.getElementById("currentType").value = type;
 
-        document.getElementById("youtube").value = data.youtube || "";
+        document.getElementById("youtubeId").value = data.youtubeId || "";
         document.getElementById("screenshots").value = data.screenshots ? data.screenshots.join(", ") : "";
 
         window.scrollTo({ top: 0, behavior: 'smooth' });
