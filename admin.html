@@ -190,6 +190,12 @@
     <label for="details">تفاصيل التطبيق / اللعبة:</label>
     <textarea id="details" rows="4" required></textarea>
 
+    <label for="youtube">رابط فيديو YouTube (اختياري):</label>
+    <input type="url" id="youtube" placeholder="https://www.youtube.com/embed/XXXXXXXX" />
+
+    <label for="screenshots">روابط لقطات الشاشة (اختياري، مفصولة بفاصلة):</label>
+    <textarea id="screenshots" rows="3" placeholder="https://example.com/shot1.jpg, https://example.com/shot2.jpg"></textarea>
+
     <button type="submit">حفظ</button>
   </form>
 
@@ -298,12 +304,18 @@
     const type = document.getElementById("type").value;
     const details = document.getElementById("details").value.trim();
 
+    const youtube = document.getElementById("youtube").value.trim();
+    const screenshotsText = document.getElementById("screenshots").value.trim();
+    const screenshots = screenshotsText ? screenshotsText.split(",").map(s => s.trim()).filter(s => s) : [];
+
     if (!name || !image || !link || !type || !details) {
-      alert("الرجاء ملء جميع الحقول");
+      alert("الرجاء ملء جميع الحقول المطلوبة");
       return;
     }
 
     const itemData = { name, image, link, details };
+    if (youtube) itemData.youtube = youtube;
+    if (screenshots.length) itemData.screenshots = screenshots;
 
     if (id) {
       const currentType = document.getElementById("currentType").value;
@@ -343,6 +355,10 @@
         document.getElementById("type").value = type;
         document.getElementById("details").value = data.details;
         document.getElementById("currentType").value = type;
+
+        document.getElementById("youtube").value = data.youtube || "";
+        document.getElementById("screenshots").value = data.screenshots ? data.screenshots.join(", ") : "";
+
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     });
