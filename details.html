@@ -78,7 +78,7 @@
       margin: 0 auto;
       scrollbar-width: thin;
       scrollbar-color: #004225 #ccc;
-      -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+      -webkit-overflow-scrolling: touch;
     }
 
     .media-strip::-webkit-scrollbar {
@@ -98,37 +98,26 @@
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
       background: transparent;
-      border: none; /* إزالة أي إطار */
+      border: none;
+      margin: 0;
+      padding: 0;
+      display: block;
+      object-fit: contain;
     }
 
     .media-strip iframe {
-      width: 355px; /* نسبة 16:9 مع ارتفاع 200 */
-    }
-
-    .media-strip img {
-      width: auto;
-      object-fit: contain;
-      /* إزالة أي إطار أو خلفية بيضاء */
+      width: 355px;
     }
 
     @media (max-width: 768px) {
-      .media-strip {
-        /* اجعلها تسمح بالتمرير أفقيًا */
-        overflow-x: auto;
-        justify-content: flex-start;
-      }
-
       .media-strip iframe {
         flex: 0 0 60vw;
         height: 200px;
-        width: auto;
       }
 
       .media-strip img {
         flex: 0 0 35vw;
         height: 200px;
-        width: auto;
-        object-fit: contain;
       }
     }
 
