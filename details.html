@@ -105,7 +105,8 @@
     }
 
     .screenshots-container img {
-      height: 160px;
+      height: 220px;
+      width: calc((100% / 3) - 13px);
       border-radius: 12px;
       object-fit: cover;
       cursor: pointer;
@@ -125,7 +126,8 @@
         height: 200px;
       }
       .screenshots-container img {
-        height: 100px;
+        height: 140px;
+        width: calc((100% / 2) - 10px);
       }
     }
   </style>
@@ -192,7 +194,6 @@
         <a class="download-btn" href="${data.link}" target="_blank" rel="noopener noreferrer">تحميل</a>
       `;
 
-      // عرض فيديو اليوتيوب إذا معرف الفيديو موجود
       if (data.youtubeId && data.youtubeId.trim() !== "") {
         youtubeContainer.innerHTML = `
           <iframe class="youtube-video" 
@@ -206,7 +207,6 @@
         youtubeContainer.innerHTML = '';
       }
 
-      // عرض لقطات الشاشة إن وجدت
       if (data.screenshots && Array.isArray(data.screenshots) && data.screenshots.length > 0) {
         screenshotsContainer.innerHTML = '';
         data.screenshots.forEach(url => {
@@ -220,7 +220,6 @@
         screenshotsContainer.innerHTML = '';
       }
 
-      // عرض التفاصيل
       detailsBox.innerHTML = data.details ? data.details.replace(/\n/g, '<br>') : '';
 
     }).catch(() => {
