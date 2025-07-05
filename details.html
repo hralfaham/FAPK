@@ -58,6 +58,40 @@
       user-select: none;
     }
 
+    .media-strip {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      padding: 15px 10px 5px;
+      scroll-snap-type: x mandatory;
+    }
+
+    .media-strip iframe {
+      height: 200px;
+      width: 355px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      background: none;
+      border: none;
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+
+    .media-strip img {
+      height: 200px;
+      width: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      background: none;
+      border: none;
+      margin: 0;
+      padding: 0;
+      display: block;
+      object-fit: contain;
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+
     .details {
       margin: 20px auto;
       max-width: 960px;
@@ -69,124 +103,24 @@
       word-wrap: break-word;
     }
 
-    .media-strip {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding: 15px 10px; /* مسافة من اليمين واليسار */
-      max-width: 960px;
-      margin: 0 auto;
-      scrollbar-width: thin;
-      scrollbar-color: #004225 #ccc;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .media-strip::-webkit-scrollbar {
-      height: 8px;
-    }
-
-    .media-strip::-webkit-scrollbar-thumb {
-      background-color: #004225;
-      border-radius: 4px;
-    }
-
-    .media-strip iframe,
-    .media-strip img {
-      height: 200px;
-      flex-shrink: 0;
-      border-radius: 12px;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      background: transparent;
-      border: none;
-      margin: 0;
-      padding: 0;
-      display: block;
-      object-fit: contain;
-    }
-
-    .media-strip iframe {
-      width: 355px;
-    }
-
-    @media (max-width: 768px) {
-      .media-strip iframe {
-        flex: 0 0 60vw;
-        height: 200px;
+    @media (max-width: 720px) {
+      .download-btn {
+        max-width: 100%;
       }
-
-      .media-strip img {
-        flex: 0 0 35vw;
-        height: 200px;
-      }
-    }
-
-    #imageModal {
-      display: none;
-      position: fixed;
-      z-index: 10000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.8);
-      align-items: center;
-      justify-content: center;
-    }
-
-    #imageModalContent {
-      position: relative;
-      max-width: 90%;
-      max-height: 90%;
-      margin: auto;
-      border-radius: 12px;
-    }
-
-    #imageModalContent img {
-      width: 100%;
-      height: auto;
-      border-radius: 12px;
-    }
-
-    #closeModalBtn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      color: white;
-      font-size: 30px;
-      font-weight: 700;
-      cursor: pointer;
-      user-select: none;
-      background: rgba(0,0,0,0.4);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      line-height: 38px;
-      text-align: center;
-      border: none;
-    }
-
-    #closeModalBtn:hover {
-      background: rgba(0,0,0,0.7);
     }
   </style>
 </head>
 <body>
 
-<div class="container" id="detailsContainer"></div>
+<div class="container" id="detailsContainer">
+  <!-- محتوى التطبيق يظهر هنا -->
+</div>
 
-<div class="media-strip" id="mediaStrip"></div>
+<div class="media-strip" id="mediaStrip">
+  <!-- فيديو + لقطات الشاشة -->
+</div>
 
 <div class="details" id="appDetails"></div>
-
-<!-- نافذة تكبير الصورة -->
-<div id="imageModal">
-  <div id="imageModalContent">
-    <button id="closeModalBtn" aria-label="إغلاق">&times;</button>
-    <img id="modalImage" src="" alt="عرض الصورة" />
-  </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -215,14 +149,11 @@
   const container = document.getElementById('detailsContainer');
   const detailsBox = document.getElementById('appDetails');
   const mediaStrip = document.getElementById('mediaStrip');
-  const imageModal = document.getElementById('imageModal');
-  const modalImage = document.getElementById('modalImage');
-  const closeModalBtn = document.getElementById('closeModalBtn');
 
   if (!appId || !type) {
     container.innerHTML = '<p style="text-align:center;">لم يتم تحديد التطبيق بشكل صحيح.</p>';
   } else {
-    db.ref(`${type}/${appId}`).once('value').then(snapshot => {
+    db.ref(type + '/' + appId).once('value').then(snapshot => {
       const data = snapshot.val();
       if (!data) {
         container.innerHTML = '<p style="text-align:center;">التطبيق غير موجود.</p>';
@@ -237,47 +168,26 @@
         <a class="download-btn" href="${data.link}" target="_blank" rel="noopener noreferrer">تحميل</a>
       `;
 
-      mediaStrip.innerHTML = '';
+      // شريط الفيديو ولقطات الشاشة
+      let mediaHTML = '';
 
-      if (data.youtubeId && data.youtubeId.trim() !== "") {
-        const iframe = document.createElement('iframe');
-        iframe.src = `https://www.youtube.com/embed/${data.youtubeId.trim()}`;
-        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
-        iframe.allowFullscreen = true;
-        mediaStrip.appendChild(iframe);
+      if (data.videoId) {
+        mediaHTML += `<iframe src="https://www.youtube.com/embed/${data.videoId}" frameborder="0" allowfullscreen></iframe>`;
       }
 
-      if (data.screenshots && Array.isArray(data.screenshots) && data.screenshots.length > 0) {
-        data.screenshots.forEach(url => {
-          const img = document.createElement('img');
-          img.src = url;
-          img.alt = data.name + ' - لقطة شاشة';
-          img.loading = 'lazy';
-          img.addEventListener('click', () => {
-            modalImage.src = url;
-            imageModal.style.display = 'flex';
-          });
-          mediaStrip.appendChild(img);
-        });
+      if (data.screenshots) {
+        const shots = data.screenshots.split(',').map(url => url.trim()).filter(Boolean);
+        for (const shot of shots) {
+          mediaHTML += `<img src="${shot}" alt="لقطة شاشة" />`;
+        }
       }
 
+      mediaStrip.innerHTML = mediaHTML;
       detailsBox.innerHTML = data.details ? data.details.replace(/\n/g, '<br>') : '';
     }).catch(() => {
       container.innerHTML = '<p style="text-align:center;">حدث خطأ أثناء تحميل البيانات.</p>';
     });
   }
-
-  closeModalBtn.addEventListener('click', () => {
-    imageModal.style.display = 'none';
-    modalImage.src = '';
-  });
-
-  imageModal.addEventListener('click', (e) => {
-    if (e.target === imageModal) {
-      imageModal.style.display = 'none';
-      modalImage.src = '';
-    }
-  });
 </script>
 
 </body>
