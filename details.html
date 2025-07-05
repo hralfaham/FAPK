@@ -109,14 +109,24 @@
       background: transparent;
     }
 
-    @media(max-width: 768px) {
-      .media-strip iframe {
-        width: 100%;
-        min-width: 300px;
-        height: 180px;
+    /* التعديل لعرض الفيديو واللقطة جنب بعض بالجوال */
+    @media (max-width: 768px) {
+      .media-strip {
+        overflow-x: hidden;
+        justify-content: flex-start;
       }
+
+      .media-strip iframe {
+        flex: 0 0 60vw;
+        height: 200px;
+        width: auto;
+      }
+
       .media-strip img {
-        height: 180px;
+        flex: 0 0 35vw;
+        height: 200px;
+        width: auto;
+        object-fit: contain;
       }
     }
 
@@ -235,6 +245,8 @@
         <a class="download-btn" href="${data.link}" target="_blank" rel="noopener noreferrer">تحميل</a>
       `;
 
+      mediaStrip.innerHTML = ''; // نظف الشريط قبل الإضافة
+
       if (data.youtubeId && data.youtubeId.trim() !== "") {
         const iframe = document.createElement('iframe');
         iframe.src = `https://www.youtube.com/embed/${data.youtubeId.trim()}`;
@@ -243,7 +255,7 @@
         mediaStrip.appendChild(iframe);
       }
 
-      if (data.screenshots && Array.isArray(data.screenshots)) {
+      if (data.screenshots && Array.isArray(data.screenshots) && data.screenshots.length > 0) {
         data.screenshots.forEach(url => {
           const img = document.createElement('img');
           img.src = url;
