@@ -91,19 +91,20 @@
 
     .media-strip iframe,
     .media-strip img {
-      height: 250px;
+      height: 200px;
       flex-shrink: 0;
       border-radius: 12px;
       cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 
     .media-strip iframe {
-      width: 444px; /* نسبة 16:9 مع ارتفاع 250 */
+      width: 355px; /* نسبة 16:9 مع ارتفاع 200 */
       background: #000;
     }
 
     .media-strip img {
-      width: auto;
+      width: auto; /* عرض تلقائي حسب حجم الصورة */
       object-fit: contain;
       background: transparent;
     }
@@ -112,10 +113,10 @@
       .media-strip iframe {
         width: 100%;
         min-width: 300px;
-        height: 200px;
+        height: 180px;
       }
       .media-strip img {
-        height: 200px;
+        height: 180px;
       }
     }
 
