@@ -69,41 +69,63 @@
       word-wrap: break-word;
     }
 
-    .video-section, .screenshots-section {
-      max-width: 960px;
-      margin: 20px auto;
-      padding: 0 15px;
-      text-align: center;
-    }
-
-    .screenshots-gallery {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .screenshots-gallery img {
-      width: 100px;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-      transition: transform 0.3s ease;
-    }
-
-    .screenshots-gallery img:hover {
-      transform: scale(1.1);
-    }
-
-    iframe {
+    /* عرض فيديو يوتيوب */
+    .youtube-video {
+      width: 100%;
+      max-width: 560px;
+      height: 315px;
+      margin: 20px auto 10px auto;
       border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    }
+
+    /* لقطات الشاشة */
+    .screenshots-container {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding: 10px 0;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto 20px auto;
+      scrollbar-width: thin;
+      scrollbar-color: #004225 #e0e0e0;
+    }
+    .screenshots-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    .screenshots-container::-webkit-scrollbar-track {
+      background: #e0e0e0;
+      border-radius: 4px;
+    }
+    .screenshots-container::-webkit-scrollbar-thumb {
+      background-color: #004225;
+      border-radius: 4px;
+    }
+
+    .screenshots-container img {
+      height: 160px;
+      border-radius: 12px;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+    .screenshots-container img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
     @media (max-width: 720px) {
       .download-btn {
         max-width: 100%;
+      }
+      .youtube-video {
+        height: 200px;
+      }
+      .screenshots-container img {
+        height: 100px;
       }
     }
   </style>
@@ -114,6 +136,13 @@
   <!-- محتوى الصورة والاسم والزر سيتم إضافته هنا -->
 </div>
 
+<!-- عرض فيديو يوتيوب -->
+<div id="youtubeContainer"></div>
+
+<!-- لقطات الشاشة -->
+<div class="screenshots-container" id="screenshotsContainer"></div>
+
+<!-- تفاصيل التطبيق -->
 <div class="details" id="appDetails"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -142,6 +171,8 @@
   const type = getQueryParam('type');
   const container = document.getElementById('detailsContainer');
   const detailsBox = document.getElementById('appDetails');
+  const youtubeContainer = document.getElementById('youtubeContainer');
+  const screenshotsContainer = document.getElementById('screenshotsContainer');
 
   if (!appId || !type) {
     container.innerHTML = '<p style="text-align:center;">لم يتم تحديد التطبيق بشكل صحيح.</p>';
@@ -161,31 +192,36 @@
         <a class="download-btn" href="${data.link}" target="_blank" rel="noopener noreferrer">تحميل</a>
       `;
 
-      detailsBox.innerHTML = data.details ? data.details.replace(/\n/g, '<br>') : '';
-
-      // ✅ عرض الفيديو إذا موجود
-      if (data.youtube) {
-        const videoSection = document.createElement('div');
-        videoSection.className = 'video-section';
-        videoSection.innerHTML = `
-          <h3>فيديو توضيحي</h3>
-          <iframe width="100%" height="300" src="${data.youtube}" frameborder="0" allowfullscreen></iframe>
+      // عرض فيديو اليوتيوب إذا معرف الفيديو موجود
+      if (data.youtubeId && data.youtubeId.trim() !== "") {
+        youtubeContainer.innerHTML = `
+          <iframe class="youtube-video" 
+            src="https://www.youtube.com/embed/${data.youtubeId.trim()}" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+          </iframe>
         `;
-        detailsBox.appendChild(videoSection);
+      } else {
+        youtubeContainer.innerHTML = '';
       }
 
-      // ✅ عرض لقطات الشاشة إذا لم يوجد فيديو
-      else if (data.screenshots && Array.isArray(data.screenshots)) {
-        const screenshotsSection = document.createElement('div');
-        screenshotsSection.className = 'screenshots-section';
-        let gallery = '<h3>لقطات الشاشة</h3><div class="screenshots-gallery">';
-        data.screenshots.forEach(img => {
-          gallery += `<img src="${img}" alt="لقطة شاشة">`;
+      // عرض لقطات الشاشة إن وجدت
+      if (data.screenshots && Array.isArray(data.screenshots) && data.screenshots.length > 0) {
+        screenshotsContainer.innerHTML = '';
+        data.screenshots.forEach(url => {
+          const img = document.createElement('img');
+          img.src = url;
+          img.alt = data.name + ' - لقطة شاشة';
+          img.loading = 'lazy';
+          screenshotsContainer.appendChild(img);
         });
-        gallery += '</div>';
-        screenshotsSection.innerHTML = gallery;
-        detailsBox.appendChild(screenshotsSection);
+      } else {
+        screenshotsContainer.innerHTML = '';
       }
+
+      // عرض التفاصيل
+      detailsBox.innerHTML = data.details ? data.details.replace(/\n/g, '<br>') : '';
 
     }).catch(() => {
       container.innerHTML = '<p style="text-align:center;">حدث خطأ أثناء تحميل البيانات.</p>';
