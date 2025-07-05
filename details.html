@@ -71,9 +71,9 @@
 
     .media-strip {
       display: flex;
-      gap: 10px;
+      gap: 8px;              /* مسافة صغيرة بين الصور والفيديو */
       overflow-x: auto;
-      padding: 15px 0;
+      padding: 15px 25px;    /* مسافة أكبر على يمين ويسار الشريط بينه وبين الشاشة */
       max-width: 960px;
       margin: 0 auto;
       scrollbar-width: thin;
@@ -103,21 +103,21 @@
       padding: 0;
       display: block;
       object-fit: contain;
-    }
-
-    .media-strip iframe {
-      width: 355px;
+      width: auto;
+      max-width: 355px;
     }
 
     @media (max-width: 768px) {
       .media-strip iframe {
         flex: 0 0 60vw;
         height: 200px;
+        max-width: none;
       }
 
       .media-strip img {
         flex: 0 0 35vw;
         height: 200px;
+        max-width: none;
       }
     }
 
