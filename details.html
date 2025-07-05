@@ -79,6 +79,7 @@
       scrollbar-width: thin;
       scrollbar-color: #004225 #ccc;
       -webkit-overflow-scrolling: touch;
+      align-items: center;   /* محاذاة عمودية وسط */
     }
 
     .media-strip::-webkit-scrollbar {
@@ -90,33 +91,47 @@
       border-radius: 4px;
     }
 
-    .media-strip iframe,
-    .media-strip img {
+    .media-strip iframe {
       height: 200px;
+      width: 355px;
       flex-shrink: 0;
       border-radius: 12px;
-      cursor: pointer;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      background: transparent;
       border: none;
+      background: transparent;
       margin: 0;
       padding: 0;
       display: block;
       object-fit: contain;
-      width: auto;
-      max-width: 355px;
+    }
+
+    .media-strip img {
+      height: 200px;
+      width: auto; /* عرض تلقائي حسب الصورة */
+      flex-shrink: 0;
+      border-radius: 0; /* لا إطار */
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border: none;
+      background: transparent;
+      margin: 0;
+      padding: 0;
+      display: block;
+      object-fit: contain;
+      cursor: pointer;
     }
 
     @media (max-width: 768px) {
       .media-strip iframe {
         flex: 0 0 60vw;
         height: 200px;
+        width: auto;
         max-width: none;
       }
 
       .media-strip img {
-        flex: 0 0 35vw;
+        flex: 0 0 auto;
         height: 200px;
+        width: auto;
         max-width: none;
       }
     }
