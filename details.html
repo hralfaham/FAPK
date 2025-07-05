@@ -144,6 +144,54 @@
         height: 200px;
       }
     }
+
+    /* مودال عرض الصورة */
+    #imageModal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.8);
+      align-items: center;
+      justify-content: center;
+    }
+    #imageModalContent {
+      position: relative;
+      max-width: 90%;
+      max-height: 90%;
+      margin: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+    #imageModalContent img {
+      width: 100%;
+      height: auto;
+      border-radius: 12px;
+      display: block;
+    }
+    #closeModalBtn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      color: white;
+      font-size: 30px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      background: rgba(0,0,0,0.4);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      line-height: 38px;
+      text-align: center;
+    }
+    #closeModalBtn:hover {
+      background: rgba(0,0,0,0.7);
+    }
   </style>
 </head>
 <body>
@@ -160,6 +208,14 @@
 
 <!-- تفاصيل التطبيق -->
 <div class="details" id="appDetails"></div>
+
+<!-- مودال عرض الصورة -->
+<div id="imageModal">
+  <div id="imageModalContent">
+    <span id="closeModalBtn">&times;</span>
+    <img id="modalImage" src="" alt="عرض الصورة" />
+  </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -189,6 +245,9 @@
   const detailsBox = document.getElementById('appDetails');
   const youtubeContainer = document.getElementById('youtubeContainer');
   const screenshotsContainer = document.getElementById('screenshotsContainer');
+  const imageModal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  const closeModalBtn = document.getElementById('closeModalBtn');
 
   if (!appId || !type) {
     container.innerHTML = '<p style="text-align:center;">لم يتم تحديد التطبيق بشكل صحيح.</p>';
@@ -228,6 +287,11 @@
           img.src = url;
           img.alt = data.name + ' - لقطة شاشة';
           img.loading = 'lazy';
+          img.style.userSelect = 'none';
+          img.addEventListener('click', () => {
+            modalImage.src = url;
+            imageModal.style.display = 'flex';
+          });
           screenshotsContainer.appendChild(img);
         });
       } else {
@@ -240,6 +304,20 @@
       container.innerHTML = '<p style="text-align:center;">حدث خطأ أثناء تحميل البيانات.</p>';
     });
   }
+
+  // إغلاق المودال
+  closeModalBtn.addEventListener('click', () => {
+    imageModal.style.display = 'none';
+    modalImage.src = '';
+  });
+
+  // إغلاق المودال عند الضغط خارج الصورة
+  imageModal.addEventListener('click', (e) => {
+    if (e.target === imageModal) {
+      imageModal.style.display = 'none';
+      modalImage.src = '';
+    }
+  });
 </script>
 
 </body>
